@@ -29,10 +29,18 @@ export function TestView({ questions }: TestViewProps) {
 			window.location.href = "/start";
 			return;
 		}
+
+		// 이미 결과 쿠키가 있으면 처방 페이지로 이동(세션 내 중복 생성 방지)
+		try {
+			if (document.cookie.split(";").some((c) => c.trim().startsWith("pesma_result_id="))) {
+				window.location.href = "/prescription";
+				return;
+			}
+		} catch {}
 		setNickname(savedNickname);
 	}, []);
 
-	const { currentQuestion, currentAnswer, currentIndex, totalQuestions, handleAnswerChange, handlePrev, handleNext, handleComplete, canGoPrev, canGoNext, isLastQuestion, isAnswered } = useTestLogic(questions, nickname);
+	const { currentQuestion, currentAnswer, currentIndex, totalQuestions, handleAnswerChange, handlePrev, handleNext, handleComplete, canGoPrev, canGoNext, isLastQuestion, isAnswered, isSubmitting } = useTestLogic(questions, nickname);
 
 	// nickname 로딩 중
 	if (!nickname) {
@@ -55,7 +63,7 @@ export function TestView({ questions }: TestViewProps) {
 			<AnswerOptions value={currentAnswer} onChange={handleAnswerChange} />
 
 			{/* 네비게이션 버튼 */}
-			<NavigationButtons onPrev={handlePrev} onNext={handleNext} onComplete={handleComplete} canGoPrev={canGoPrev} canGoNext={canGoNext} isLastQuestion={isLastQuestion} isAnswered={isAnswered} />
+			<NavigationButtons onPrev={handlePrev} onNext={handleNext} onComplete={handleComplete} canGoPrev={canGoPrev} canGoNext={canGoNext} isLastQuestion={isLastQuestion} isAnswered={isAnswered} isSubmitting={isSubmitting} />
 		</div>
 	);
 }

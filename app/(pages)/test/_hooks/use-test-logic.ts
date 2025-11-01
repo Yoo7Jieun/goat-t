@@ -21,6 +21,7 @@ export function useTestLogic(questions: PesmaQuestion[], nickname: string) {
 	// selected: 사용자가 클릭한 원본 값(라디오 표시용)
 	const [selected, setSelected] = useState<AnswersById>({});
 	const [isHydrated, setIsHydrated] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const currentQuestion = questions[currentIndex];
 	// 라디오에는 사용자가 클릭한 원본 값을 표시
@@ -89,9 +90,23 @@ export function useTestLogic(questions: PesmaQuestion[], nickname: string) {
 
 	// 완료하기
 	const handleComplete = async () => {
+		if (isSubmitting) return;
+		// 세션 단위 중복 제출 방지 플래그 확인
+		try {
+			if (sessionStorage.getItem("pesma_test_submitting") === "1") {
+				return;
+			}
+			sessionStorage.setItem("pesma_test_submitting", "1");
+		} catch {}
+		setIsSubmitting(true);
+
 		// 모든 답변이 완료되었는지 확인
 		if (Object.keys(answers).length !== totalQuestions) {
 			alert("모든 질문에 답변해주세요.");
+			setIsSubmitting(false);
+			try {
+				sessionStorage.removeItem("pesma_test_submitting");
+			} catch {}
 			return;
 		}
 
@@ -125,11 +140,18 @@ export function useTestLogic(questions: PesmaQuestion[], nickname: string) {
 			sessionStorage.removeItem(SESSION_KEY);
 
 			// ID를 URL에 노출하지 않고 쿠키로 식별 → /prescription으로 이동
-			// prescription 페이지로 이동 (id 노출 없이)
+			// 제출 플래그 정리 후 prescription 페이지로 이동 (id 노출 없이)
+			try {
+				sessionStorage.removeItem("pesma_test_submitting");
+			} catch {}
 			window.location.href = `/prescription`;
 		} catch (error) {
 			console.error("테스트 제출 실패:", error);
 			alert("테스트 제출에 실패했습니다. 다시 시도해주세요.");
+			setIsSubmitting(false);
+			try {
+				sessionStorage.removeItem("pesma_test_submitting");
+			} catch {}
 		}
 	};
 
@@ -155,5 +177,6 @@ export function useTestLogic(questions: PesmaQuestion[], nickname: string) {
 		canGoNext,
 		isLastQuestion,
 		isAnswered,
+		isSubmitting,
 	};
 }
