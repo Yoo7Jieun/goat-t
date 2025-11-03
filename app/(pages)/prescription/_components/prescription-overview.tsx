@@ -10,7 +10,7 @@ export function PrescriptionOverview({ dear, letter, concept, movie }: Prescript
 		<>
 			{dear && (
 				<div>
-					<h3 className="text-lg font-semibold text-gray-700 mb-2">Dear</h3>
+					<h3 className="text-lg font-semibold text-gray-700 mb-2">Mission</h3>
 					<p className="text-gray-800 whitespace-pre-wrap">{dear}</p>
 				</div>
 			)}
