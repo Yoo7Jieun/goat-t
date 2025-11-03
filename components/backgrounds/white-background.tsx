@@ -7,7 +7,7 @@ interface WhiteBackgroundProps {
 
 export function WhiteBackground({ children, className = "" }: WhiteBackgroundProps) {
 	return (
-		<div data-concept="white" className={`min-h-screen bg-white text-gray-900 ${className}`}>
+		<div className={`min-h-screen bg-white text-gray-900 ${className}`}>
 			{/* white 배경 전용 장식 요소들 */}
 			{/* <div className="absolute inset-0 pointer-events-none">
 				여기에 이미지, 텍스트, 패턴 등 추가
