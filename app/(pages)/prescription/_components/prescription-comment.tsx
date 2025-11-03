@@ -20,7 +20,7 @@ export function PrescriptionComment({ onSubmit, isSubmitting = false }: Prescrip
 	return (
 		<div className="border-t pt-6">
 			<h3 className="text-xl font-bold mb-4 text-black">Feedback</h3>
-			<p className="text-sm text-gray-500 mb-4">여행 처방이 도움이 되셨나요? 다양한 의견을 자유롭게 남겨주시면 큰 도움이 됩니다. 감사합니다!</p>
+			<p className="text-sm text-gray-500 mb-4">여행 처방이 도움이 되셨나요? 다양한 의견을 남겨주시면 큰 도움이 됩니다. 감사합니다!</p>
 			<form onSubmit={handleSubmit} className="space-y-4">
 				<textarea
 					value={comment}
