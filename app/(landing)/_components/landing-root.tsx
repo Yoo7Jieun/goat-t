@@ -1,46 +1,31 @@
 "use client";
 
-import { useMemo } from "react";
 import { useScrollProgress } from "@/lib/scroll/useScrollProgress";
 import { useRouteOnThreshold } from "@/lib/scroll/useRouteOnThreshold";
-import Hero from "../_sections/hero";
-import Gallery from "../_sections/gallery";
-import Finale from "../_sections/finale";
 
 export default function LandingRoot() {
 	const progress = useScrollProgress(); // 0 ~ 1
 
-	// 마지막 5%에서 /start로 라우팅 (한 번만)
-	useRouteOnThreshold(progress, 0.95, "/start");
+	// 90% 스크롤 시 /start로 라우팅
+	useRouteOnThreshold(progress, 0.9, "/start");
 
-	// 섹션용 부분 진행도 계산 예시
-	const sections = useMemo(
-		() => [
-			{ start: 0.0, end: 0.33 },
-			{ start: 0.33, end: 0.66 },
-			{ start: 0.66, end: 1.0 },
-		],
-		[]
-	);
-
-	const heroProgress = clamp01((progress - sections[0].start) / (sections[0].end - sections[0].start));
-	const galleryProgress = clamp01((progress - sections[1].start) / (sections[1].end - sections[1].start));
-	const finaleProgress = clamp01((progress - sections[2].start) / (sections[2].end - sections[2].start));
+	// progress에 따라 텍스트를 확대 (1배 → 3배)
+	const scale = 1 + progress * 2;
 
 	return (
 		<main className="min-h-[300vh] bg-white">
-			{/* 각 섹션은 화면 높이 이상으로 구성하여 스크롤 여유를 줌 */}
-			<section className="h-screen sticky top-0 overflow-hidden">
-				<Hero progress={heroProgress} />
-			</section>
+			{/* 중앙 고정: 줌인되는 텍스트 */}
+			<div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden">
+				{/* 중앙: 줌인되는 텍스트 */}
+				<div className="transition-transform duration-100 ease-out" style={{ transform: `scale(${scale})` }}>
+					<p className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 text-center px-4">줌인 스크롤 이팩트가 들어갈 자리입니다</p>
+				</div>
 
-			<section className="h-screen sticky top-0 overflow-hidden">
-				<Gallery progress={galleryProgress} />
-			</section>
-
-			<section className="h-screen sticky top-0 overflow-hidden">
-				<Finale progress={finaleProgress} />
-			</section>
+				{/* 하단: 안내 메시지 */}
+				<div className="mt-8">
+					<p className="text-base sm:text-lg text-gray-600 text-center">스크롤하시면 테스트 시작 페이지로 이동합니다</p>
+				</div>
+			</div>
 		</main>
 	);
 }

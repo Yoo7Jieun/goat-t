@@ -12,7 +12,7 @@ export function NicknameInput({ value, onChange, maxLength = 20 }: NicknameInput
 	return (
 		<div className="flex flex-col items-center gap-2">
 			<label htmlFor="nickname" className="text-lg font-medium text-gray-700">
-				닉네임을 입력해주세요
+				닉네임을 입력하시면 테스트가 시작됩니다
 			</label>
 			<input id="nickname" type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder="닉네임" className="rounded-lg border-2 border-gray-300 px-4 py-2 text-center text-lg focus:border-black focus:outline-none" maxLength={maxLength} autoFocus />
 		</div>

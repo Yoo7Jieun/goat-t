@@ -19,13 +19,14 @@ export function PrescriptionComment({ onSubmit, isSubmitting = false }: Prescrip
 
 	return (
 		<div className="border-t pt-6">
-			<h3 className="text-xl font-bold mb-4">소감 남기기</h3>
+			<h3 className="text-xl font-bold mb-4 text-black">Feedback</h3>
+			<p className="text-sm text-gray-500 mb-4">여행 처방이 도움이 되셨나요? 다양한 의견을 자유롭게 남겨주시면 큰 도움이 됩니다. 감사합니다!</p>
 			<form onSubmit={handleSubmit} className="space-y-4">
 				<textarea
 					value={comment}
 					onChange={(e) => setComment(e.target.value)}
 					placeholder="테스트를 마친 소감을 자유롭게 남겨주세요..."
-					className="w-full min-h-[120px] p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+					className="w-full min-h-[120px] p-4 border border-gray-300 rounded-lg resize-none bg-white text-black placeholder:text-gray-400 caret-black focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
 					disabled={isSubmitting}
 				/>
 				<div className="flex justify-end">

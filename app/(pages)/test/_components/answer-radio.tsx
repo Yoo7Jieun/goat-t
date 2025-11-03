@@ -7,28 +7,28 @@ type AnswerRadioProps = {
 // 크기와 색상 설정 (aspect-square로 원형 보장)
 const RADIO_STYLES = {
 	1: {
-		size: "w-24 h-24", // 가장 큼
-		borderWidth: "border-4",
+		size: "w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24", // 가장 큼
+		borderWidth: "border-3 sm:border-4",
 		borderColor: "border-red-600", // 진한 빨강
 	},
 	2: {
-		size: "w-20 h-20",
-		borderWidth: "border-3",
+		size: "w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20",
+		borderWidth: "border-2 sm:border-3",
 		borderColor: "border-red-400", // 연한 빨강
 	},
 	3: {
-		size: "w-16 h-16", // 가장 작음 (중앙)
-		borderWidth: "border-3",
+		size: "w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16", // 가장 작음 (중앙)
+		borderWidth: "border-2 sm:border-3",
 		borderColor: "border-gray-300", // 회색
 	},
 	4: {
-		size: "w-20 h-20",
-		borderWidth: "border-3",
+		size: "w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20",
+		borderWidth: "border-2 sm:border-3",
 		borderColor: "border-blue-400", // 연한 파랑
 	},
 	5: {
-		size: "w-24 h-24", // 가장 큼
-		borderWidth: "border-4",
+		size: "w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24", // 가장 큼
+		borderWidth: "border-3 sm:border-4",
 		borderColor: "border-blue-600", // 진한 파랑
 	},
 };

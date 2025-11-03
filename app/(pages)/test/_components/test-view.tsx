@@ -8,6 +8,7 @@ import { QuestionDisplay } from "./question-display";
 import { AnswerOptions } from "./answer-options";
 import { NavigationButtons } from "./navigation-buttons";
 import ResetSessionButton from "@/components/reset-session-button";
+import { BlackBackground } from "@/components/backgrounds/black-background";
 
 type TestViewProps = {
 	questions: PesmaQuestion[];
@@ -48,22 +49,24 @@ export function TestView({ questions }: TestViewProps) {
 	}
 
 	return (
-		<div className="mx-auto max-w-2xl space-y-8 p-6">
-			{/* 상단 유틸 영역 */}
-			<div className="flex justify-end">
-				<ResetSessionButton onReset={() => window.location.reload()} />
+		<BlackBackground>
+			<div className="mx-auto max-w-2xl space-y-6 sm:space-y-8 p-4 sm:p-6 min-h-screen flex flex-col justify-center">
+				{/* 상단 유틸 영역 */}
+				<div className="flex justify-end">
+					<ResetSessionButton onReset={() => window.location.reload()} />
+				</div>
+				{/* 프로그레스바 */}
+				<ProgressBar current={currentIndex + 1} total={totalQuestions} />
+
+				{/* 질문 표시 */}
+				<QuestionDisplay questionText={currentQuestion.text} />
+
+				{/* 답변 옵션 (라디오 버튼) */}
+				<AnswerOptions value={currentAnswer} onChange={handleAnswerChange} />
+
+				{/* 네비게이션 버튼 */}
+				<NavigationButtons onPrev={handlePrev} onNext={handleNext} onComplete={handleComplete} canGoPrev={canGoPrev} canGoNext={canGoNext} isLastQuestion={isLastQuestion} isAnswered={isAnswered} isSubmitting={isSubmitting} />
 			</div>
-			{/* 프로그레스바 */}
-			<ProgressBar current={currentIndex + 1} total={totalQuestions} />
-
-			{/* 질문 표시 */}
-			<QuestionDisplay questionText={currentQuestion.text} />
-
-			{/* 답변 옵션 (라디오 버튼) */}
-			<AnswerOptions value={currentAnswer} onChange={handleAnswerChange} />
-
-			{/* 네비게이션 버튼 */}
-			<NavigationButtons onPrev={handlePrev} onNext={handleNext} onComplete={handleComplete} canGoPrev={canGoPrev} canGoNext={canGoNext} isLastQuestion={isLastQuestion} isAnswered={isAnswered} isSubmitting={isSubmitting} />
-		</div>
+		</BlackBackground>
 	);
 }

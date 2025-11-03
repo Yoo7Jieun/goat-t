@@ -7,6 +7,7 @@ import { PrescriptionOverview } from "./prescription-overview";
 import { PrescriptionSteps } from "./prescription-steps";
 import { PrescriptionComment } from "./prescription-comment";
 import ResetSessionButton from "@/components/reset-session-button";
+import { BlackBackground } from "@/components/backgrounds/black-background";
 
 type SessionResult = {
 	id: number;
@@ -118,35 +119,42 @@ export function PrescriptionView({ initialResult }: { initialResult?: SessionRes
 	}
 
 	return (
-		<div className="mx-auto max-w-4xl space-y-8 p-6">
-			{/* 처방전 내용 */}
-			<div className="bg-white rounded-lg shadow-lg p-8 space-y-6">
-				{prescription.name && <PrescriptionTitle nickname={resultInfo.nickname} name={prescription.name} />}
+		<BlackBackground>
+			<div className="mx-auto max-w-4xl space-y-8 p-6">
+				{/* 1. Title + Overview */}
+				<div className="bg-white rounded-lg shadow-lg p-8 space-y-6">
+					{prescription.name && <PrescriptionTitle nickname={resultInfo.nickname} name={prescription.name} />}
+					<PrescriptionOverview dear={prescription.dear} letter={prescription.letter} concept={prescription.concept} movie={prescription.movie} />
+				</div>
 
-				<PrescriptionOverview dear={prescription.dear} letter={prescription.letter} concept={prescription.concept} movie={prescription.movie} />
+				{/* 2. Steps */}
+				<div className="bg-white rounded-lg shadow-lg p-8">
+					<PrescriptionSteps
+						challengeConcept={prescription.challengeConcept}
+						challengeKeyword={prescription.challengeKeyword}
+						challengeActivity={prescription.challengeActivity}
+						maintainConcept={prescription.maintainConcept}
+						maintainKeyword={prescription.maintainKeyword}
+						maintainActivity={prescription.maintainActivity}
+						reconcileConcept={prescription.reconcileConcept}
+						reconcileKeyword={prescription.reconcileKeyword}
+						reconcileActivity={prescription.reconcileActivity}
+					/>
+				</div>
 
-				<PrescriptionSteps
-					challengeConcept={prescription.challengeConcept}
-					challengeKeyword={prescription.challengeKeyword}
-					challengeActivity={prescription.challengeActivity}
-					maintainConcept={prescription.maintainConcept}
-					maintainKeyword={prescription.maintainKeyword}
-					maintainActivity={prescription.maintainActivity}
-					reconcileConcept={prescription.reconcileConcept}
-					reconcileKeyword={prescription.reconcileKeyword}
-					reconcileActivity={prescription.reconcileActivity}
-				/>
+				{/* 3. Comment */}
+				<div className="bg-white rounded-lg shadow-lg p-8">
+					<PrescriptionComment onSubmit={handleCommentSubmit} isSubmitting={isSubmittingComment} />
+				</div>
 
-				<PrescriptionComment onSubmit={handleCommentSubmit} isSubmitting={isSubmittingComment} />
+				{/* 하단 버튼 */}
+				<div className="flex justify-center gap-3">
+					<a href="/" className="px-8 py-3 bg-white text-black rounded-lg hover:bg-gray-200 font-semibold">
+						홈으로 돌아가기
+					</a>
+					<ResetSessionButton onReset={handleReset} />
+				</div>
 			</div>
-
-			{/* 하단 버튼 */}
-			<div className="flex justify-center gap-3">
-				<a href="/" className="px-8 py-3 bg-black text-white rounded-lg hover:bg-gray-800 font-semibold">
-					홈으로 돌아가기
-				</a>
-				<ResetSessionButton onReset={handleReset} />
-			</div>
-		</div>
+		</BlackBackground>
 	);
 }

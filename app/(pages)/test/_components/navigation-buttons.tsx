@@ -10,7 +10,7 @@ type NavigationButtonsProps = {
 };
 
 export function NavigationButtons({ onPrev, onNext, onComplete, canGoPrev, canGoNext, isLastQuestion, isAnswered, isSubmitting = false }: NavigationButtonsProps) {
-	const showAnswerHint = !isLastQuestion && !isAnswered;
+	const nextDisabled = !canGoNext || !isAnswered;
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -20,8 +20,8 @@ export function NavigationButtons({ onPrev, onNext, onComplete, canGoPrev, canGo
 				</button>
 
 				{!isLastQuestion ? (
-					<button onClick={onNext} disabled={!canGoNext || !isAnswered} className="flex-1 rounded-lg bg-black px-6 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40">
-						다음
+					<button onClick={onNext} disabled={nextDisabled} className="flex-1 rounded-lg bg-black px-6 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40">
+						{nextDisabled ? "응답을 완료해주세요" : "다음"}
 					</button>
 				) : (
 					<button onClick={onComplete} disabled={!isAnswered || isSubmitting} className="flex-1 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40" aria-busy={isSubmitting}>
@@ -29,8 +29,7 @@ export function NavigationButtons({ onPrev, onNext, onComplete, canGoPrev, canGo
 					</button>
 				)}
 			</div>
-
-			{showAnswerHint && <p className="text-sm text-red-600">응답을 완료해주세요</p>}
+			{/* Disabled 상태에서는 버튼 텍스트로 안내를 표시합니다. */}
 		</div>
 	);
 }
