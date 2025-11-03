@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { PesmaQuestion, AnswersById } from "@/lib/types";
 import { submitTestResults } from "@/actions/submit-test";
-import { calculateScore } from "@/lib/score-calculator";
 
-const SESSION_KEY = "pesma_test_answers";
+const SESSION_KEY = "pesma_test_answers"; // 이제 '원본 선택값'을 저장합니다 (1-5)
 const SESSION_RESULT_KEY = "pesma_test_result"; // legacy; no longer used for routing
 
 /**
@@ -16,9 +15,7 @@ const SESSION_RESULT_KEY = "pesma_test_result"; // legacy; no longer used for ro
 export function useTestLogic(questions: PesmaQuestion[], nickname: string) {
 	// 상태 관리
 	const [currentIndex, setCurrentIndex] = useState(0);
-	// answers: 변환된 최종 점수(세션/제출용)
-	const [answers, setAnswers] = useState<AnswersById>({});
-	// selected: 사용자가 클릭한 원본 값(라디오 표시용)
+	// selected: 사용자가 클릭한 원본 값(1-5)만 관리
 	const [selected, setSelected] = useState<AnswersById>({});
 	const [isHydrated, setIsHydrated] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,20 +30,9 @@ export function useTestLogic(questions: PesmaQuestion[], nickname: string) {
 		const saved = sessionStorage.getItem(SESSION_KEY);
 		if (saved) {
 			try {
-				const parsed = JSON.parse(saved) as AnswersById; // 변환 저장된 값
-				setAnswers(parsed || {});
-				// 변환값을 기반으로 라디오 표시용 원본 값을 복원
-				const restoredSelected: AnswersById = {};
-				for (const q of questions) {
-					const v = parsed?.[q.id];
-					if (typeof v === "number") {
-						// reverse면 원복: raw = 6 - score, 아니면 그대로
-						restoredSelected[q.id] = q.reverse_score ? 6 - v : v;
-					}
-				}
-				if (Object.keys(restoredSelected).length > 0) {
-					setSelected(restoredSelected);
-				}
+				// 세션에는 '원본 선택값'만 저장합니다
+				const parsed = JSON.parse(saved) as AnswersById;
+				setSelected(parsed || {});
 			} catch {
 				// 파싱 실패 시 무시
 			}
@@ -54,24 +40,20 @@ export function useTestLogic(questions: PesmaQuestion[], nickname: string) {
 		setIsHydrated(true);
 	}, [questions]);
 
-	// 답변이 변경될 때마다 세션스토리지에 저장
+	// 선택값이 변경될 때마다 세션스토리지에 저장 (원본 값 저장)
 	useEffect(() => {
-		if (isHydrated && Object.keys(answers).length > 0) {
-			sessionStorage.setItem(SESSION_KEY, JSON.stringify(answers));
+		if (isHydrated && Object.keys(selected).length > 0) {
+			sessionStorage.setItem(SESSION_KEY, JSON.stringify(selected));
 		}
-	}, [answers, isHydrated]);
+	}, [selected, isHydrated]);
 
 	// 답변 변경 핸들러
 	const handleAnswerChange = (value: number) => {
 		// 라디오에는 사용자가 고른 원본 값을 그대로 표시
 		setSelected((prev) => ({ ...prev, [currentQuestion.id]: value }));
 
-		// 세션/제출용으로는 역채점이 반영된 값을 저장
-		const actualScore = calculateScore(value, currentQuestion.reverse_score);
-		setAnswers((prev) => ({ ...prev, [currentQuestion.id]: actualScore }));
-
-		// 콘솔에는 문제 id와 변환된 값만 출력
-		console.log("답변 저장:", currentQuestion.id, actualScore);
+		// 콘솔에는 문제 id와 원본 값만 출력
+		console.log("답변 저장(원본):", currentQuestion.id, value);
 	};
 
 	// 이전 문제로
@@ -100,8 +82,8 @@ export function useTestLogic(questions: PesmaQuestion[], nickname: string) {
 		} catch {}
 		setIsSubmitting(true);
 
-		// 모든 답변이 완료되었는지 확인
-		if (Object.keys(answers).length !== totalQuestions) {
+		// 모든 답변이 완료되었는지 확인 (원본 선택 기준)
+		if (Object.keys(selected).length !== totalQuestions) {
 			alert("모든 질문에 답변해주세요.");
 			setIsSubmitting(false);
 			try {
@@ -110,21 +92,17 @@ export function useTestLogic(questions: PesmaQuestion[], nickname: string) {
 			return;
 		}
 
-		console.log("제출할 답변(변환 저장):", answers);
+		console.log("제출할 원본 답변:", selected);
 
 		try {
 			// 서버 액션 호출
 			const result = await submitTestResults({
-				answers: answers,
+				answers: selected, // 원본 선택값 제출 (서버에서 역채점 일괄 처리)
 				questions: questions,
 				nickname,
 			});
 
-			// 결과를 세션스토리지에 저장 (prescription 페이지에서 사용)
-			// 결과 식별 쿠키 설정(클라이언트에서 설정하여 서버가 읽도록 함)
-			try {
-				document.cookie = `pesma_result_id=${encodeURIComponent(String(result.id))}; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-			} catch {}
+			// 결과 식별 쿠키는 서버 액션에서 설정됨 (서버 주도 동기화)
 
 			// legacy; no longer used for routing
 			sessionStorage.setItem(

@@ -64,15 +64,19 @@ export async function fetchPesmaQuestions(): Promise<PesmaQuestion[]> {
 		throw new Error("pesma.json 'pesma' must be an array");
 	}
 
+	const isReverseId = (id: string) => /_r$/i.test(id);
+
 	const questions: PesmaQuestion[] = questionsArray.map((item) => {
 		const obj = item as Record<string, unknown>;
-		if (typeof obj.id !== "string" || typeof obj.text !== "string" || typeof obj.reverse_score !== "boolean") {
-			throw new Error("Each question must have id (string), text (string), and reverse_score (boolean)");
+		if (typeof obj.id !== "string" || typeof obj.text !== "string") {
+			throw new Error("Each question must have id (string) and text (string)");
 		}
+		// reverse_score가 없으면 id 접미사로 판단 (예: "s5_r")
+		const reverseScore = typeof obj.reverse_score === "boolean" ? (obj.reverse_score as boolean) : isReverseId(obj.id as string);
 		return {
 			id: obj.id,
 			text: obj.text,
-			reverse_score: obj.reverse_score,
+			reverse_score: reverseScore,
 		};
 	});
 

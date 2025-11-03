@@ -24,7 +24,8 @@ export function calculateFinalScores(questions: PesmaQuestion[], answers: Map<st
 	questions.forEach((question) => {
 		const rawValue = answers.get(question.id);
 		if (rawValue !== undefined) {
-			const score = calculateScore(rawValue, question.reverse_score);
+			const isReverse = typeof (question as any).reverse_score === "boolean" ? (question as any).reverse_score : /_r$/i.test(question.id);
+			const score = calculateScore(rawValue, isReverse);
 			scores.set(question.id, score);
 		}
 	});

@@ -8,7 +8,7 @@ import { QuestionDisplay } from "./question-display";
 import { AnswerOptions } from "./answer-options";
 import { NavigationButtons } from "./navigation-buttons";
 import ResetSessionButton from "@/components/reset-session-button";
-import { BlackBackground } from "@/components/backgrounds/black-background";
+import { MatrixTheme } from "@/components/themes/theme-matrix";
 
 type TestViewProps = {
 	questions: PesmaQuestion[];
@@ -62,7 +62,7 @@ export function TestView({ questions }: TestViewProps) {
 	}
 
 	return (
-		<BlackBackground>
+		<MatrixTheme>
 			<div className="mx-auto max-w-2xl space-y-6 sm:space-y-8 p-4 sm:p-6 min-h-screen flex flex-col justify-center">
 				{/* 상단 유틸 영역 */}
 				<div className="flex justify-end">
@@ -80,6 +80,6 @@ export function TestView({ questions }: TestViewProps) {
 				{/* 네비게이션 버튼 */}
 				<NavigationButtons onPrev={handlePrev} onNext={handleNext} onComplete={handleComplete} canGoPrev={canGoPrev} canGoNext={canGoNext} isLastQuestion={isLastQuestion} isAnswered={isAnswered} isSubmitting={isSubmitting} />
 			</div>
-		</BlackBackground>
+		</MatrixTheme>
 	);
 }

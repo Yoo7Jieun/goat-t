@@ -7,7 +7,7 @@ import { PrescriptionOverview } from "./prescription-overview";
 import { PrescriptionSteps } from "./prescription-steps";
 import { PrescriptionComment } from "./prescription-comment";
 import ResetSessionButton from "@/components/reset-session-button";
-import { BlackBackground } from "@/components/backgrounds/black-background";
+import { MatrixTheme } from "@/components/themes/theme-matrix";
 
 type SessionResult = {
 	id: number;
@@ -47,13 +47,29 @@ export function PrescriptionView({ initialResult }: { initialResult?: SessionRes
 	};
 
 	useEffect(() => {
-		if (!initialResult) {
-			setError("테스트 결과를 찾을 수 없습니다. 홈에서 테스트를 다시 시작해주세요.");
+		// 초기 진입: 서버가 넘겨준 결과가 없으면 세션스토리지에서 폴백 시도
+		if (initialResult) {
+			setResultInfo(initialResult);
+			fetchPrescription(initialResult.code);
 			setLoading(false);
 			return;
 		}
-		setResultInfo(initialResult);
-		fetchPrescription(initialResult.code);
+		try {
+			const raw = sessionStorage.getItem("pesma_test_result");
+			if (raw) {
+				const parsed = JSON.parse(raw) as SessionResult;
+				if (parsed && parsed.code && parsed.nickname) {
+					setResultInfo(parsed);
+					void fetchPrescription(parsed.code);
+					return;
+				}
+			}
+			setError("테스트 결과를 찾을 수 없습니다. 홈에서 테스트를 다시 시작해주세요.");
+		} catch {
+			setError("테스트 결과를 찾을 수 없습니다. 홈에서 테스트를 다시 시작해주세요.");
+		} finally {
+			setLoading(false);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -77,11 +93,25 @@ export function PrescriptionView({ initialResult }: { initialResult?: SessionRes
 
 		setIsSubmittingComment(true);
 		try {
-			const response = await fetch("/api/prescription", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ comment }),
-			});
+			// 쿠키 사용 가능 여부 확인 (해당 쿠키가 실제 존재하는지 체크)
+			const hasCookie = typeof document !== "undefined" && document.cookie.split("; ").some((c) => c.startsWith("pesma_result_id="));
+
+			let response: Response;
+			if (hasCookie) {
+				// 기존 쿠키 기반 엔드포인트
+				response = await fetch("/api/prescription", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ comment }),
+				});
+			} else {
+				// 쿠키가 비활성화된 경우 폴백: 세션에 있는 resultId로 업데이트
+				response = await fetch("/api/comment", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ resultId: resultInfo.id, comment }),
+				});
+			}
 
 			if (!response.ok) {
 				throw new Error("소감 저장에 실패했습니다.");
@@ -92,8 +122,8 @@ export function PrescriptionView({ initialResult }: { initialResult?: SessionRes
 				sessionStorage.removeItem("pesma_can_view_prescription");
 			} catch {}
 
-			// 저장 후 감사 페이지로 이동
-			window.location.href = "/thanks";
+			// 저장 후 train 페이지로 이동
+			window.location.href = "/train";
 		} catch (err) {
 			alert(err instanceof Error ? err.message : "소감 저장 중 오류가 발생했습니다.");
 		} finally {
@@ -134,7 +164,7 @@ export function PrescriptionView({ initialResult }: { initialResult?: SessionRes
 	}
 
 	return (
-		<BlackBackground>
+		<MatrixTheme>
 			<div className="mx-auto max-w-4xl space-y-8 p-6">
 				{/* 1. Title + Overview */}
 				<div className="bg-white rounded-lg shadow-lg p-8 space-y-6">
@@ -170,6 +200,6 @@ export function PrescriptionView({ initialResult }: { initialResult?: SessionRes
 					<ResetSessionButton onReset={handleReset} />
 				</div>
 			</div>
-		</BlackBackground>
+		</MatrixTheme>
 	);
 }
