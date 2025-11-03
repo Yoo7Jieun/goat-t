@@ -78,7 +78,7 @@ export function calculatePrescriptionCode(questions: PesmaQuestion[], answers: M
 	(["p", "e", "s", "m", "a"] as const).forEach((groupKey) => {
 		const groupQuestions = groups[groupKey];
 		const totalQuestions = groupQuestions.length;
-		const threshold = (totalQuestions * 5) / 2; // 문제수 * 5 / 2
+		const threshold = totalQuestions * 5 * 0.75; // 75% 이상 득점 시 high
 		const score = groupScores[groupKey];
 
 		const mapping = codeMapping[groupKey];
@@ -100,7 +100,7 @@ export function getGroupScoreDetails(questions: PesmaQuestion[], answers: Map<st
 		const score = groupScores[key];
 		const totalQuestions = groupQuestions.length;
 		const maxScore = totalQuestions * 5;
-		const threshold = (totalQuestions * 5) / 2;
+		const threshold = totalQuestions * 5 * 0.75;
 
 		return {
 			group: groupKey.toUpperCase(),
@@ -138,7 +138,7 @@ export function calculatePrescriptionCodeFromScores(questions: PesmaQuestion[], 
 	(["p", "e", "s", "m", "a"] as const).forEach((groupKey) => {
 		const groupQuestions = groups[groupKey];
 		const totalQuestions = groupQuestions.length;
-		const threshold = (totalQuestions * 5) / 2;
+		const threshold = totalQuestions * 5 * 0.75;
 		const score = groupTotals[groupKey];
 		const mapping = codeMapping[groupKey];
 		code += score >= threshold ? mapping.high : mapping.low;
@@ -158,7 +158,7 @@ export function getGroupScoreDetailsFromScores(questions: PesmaQuestion[], final
 		const score = groupQuestions.reduce((sum, q) => sum + (finalScores.get(q.id) || 0), 0);
 		const totalQuestions = groupQuestions.length;
 		const maxScore = totalQuestions * 5;
-		const threshold = (totalQuestions * 5) / 2;
+		const threshold = totalQuestions * 5 * 0.75;
 
 		return {
 			group: groupKey.toUpperCase(),
