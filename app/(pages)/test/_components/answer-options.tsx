@@ -7,7 +7,7 @@ type AnswerOptionsProps = {
 
 export function AnswerOptions({ value, onChange }: AnswerOptionsProps) {
 	return (
-		<div className="w-full py-6 sm:py-8">
+		<div className="w-full pt-1 sm:pt-2 pb-6 sm:pb-8 -mt-4 sm:-mt-6">
 			<div className="grid grid-cols-[auto_1fr_auto] items-center gap-2 sm:gap-4 md:gap-6">
 				{/* 왼쪽: 아니다 */}
 				<div className="flex justify-end text-sm sm:text-base md:text-lg font-medium text-gray-600">

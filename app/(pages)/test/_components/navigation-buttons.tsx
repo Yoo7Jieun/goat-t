@@ -20,12 +20,12 @@ export function NavigationButtons({ onPrev, onNext, onComplete, canGoPrev, canGo
 				</button>
 
 				{!isLastQuestion ? (
-					<button onClick={onNext} disabled={nextDisabled} className="flex-1 rounded-lg bg-black px-6 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40">
+					<button onClick={onNext} disabled={nextDisabled} className="flex-1 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40">
 						{nextDisabled ? "응답을 완료해주세요" : "다음"}
 					</button>
 				) : (
 					<button onClick={onComplete} disabled={!isAnswered || isSubmitting} className="flex-1 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40" aria-busy={isSubmitting}>
-						{isSubmitting ? "제출 중..." : "완료하기"}
+						{isSubmitting ? "제출 중..." : "제출하기"}
 					</button>
 				)}
 			</div>

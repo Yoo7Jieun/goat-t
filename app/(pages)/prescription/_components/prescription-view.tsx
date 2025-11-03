@@ -28,6 +28,16 @@ export function PrescriptionView({ initialResult }: { initialResult?: SessionRes
 	const [error, setError] = useState<string | null>(null);
 	const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
+	// 클라이언트 가드: 세션 플래그가 없으면 접근 차단
+	useEffect(() => {
+		try {
+			const allowed = sessionStorage.getItem("pesma_can_view_prescription") === "1";
+			if (!allowed) {
+				window.location.href = "/start";
+			}
+		} catch {}
+	}, []);
+
 	const handleReset = () => {
 		// 세션스토리지는 버튼 컴포넌트에서 비우고, 여기서는 쿠키 제거 + /start 이동
 		try {
@@ -76,6 +86,11 @@ export function PrescriptionView({ initialResult }: { initialResult?: SessionRes
 			if (!response.ok) {
 				throw new Error("소감 저장에 실패했습니다.");
 			}
+
+			// 처방전 가드 플래그 제거 (세션 종료)
+			try {
+				sessionStorage.removeItem("pesma_can_view_prescription");
+			} catch {}
 
 			// 저장 후 감사 페이지로 이동
 			window.location.href = "/thanks";

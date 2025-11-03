@@ -139,6 +139,11 @@ export function useTestLogic(questions: PesmaQuestion[], nickname: string) {
 			// 답변 세션스토리지 클리어
 			sessionStorage.removeItem(SESSION_KEY);
 
+			// 처방전 페이지 접근 가드 플래그 설정 (세션 한정)
+			try {
+				sessionStorage.setItem("pesma_can_view_prescription", "1");
+			} catch {}
+
 			// ID를 URL에 노출하지 않고 쿠키로 식별 → /prescription으로 이동
 			// 제출 플래그 정리 후 prescription 페이지로 이동 (id 노출 없이)
 			try {

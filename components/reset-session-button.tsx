@@ -8,7 +8,7 @@ type ResetSessionButtonProps = {
 	onReset?: () => void;
 };
 
-export default function ResetSessionButton({ className, label = "초기화", onReset }: ResetSessionButtonProps) {
+export default function ResetSessionButton({ className, label = "테스트 다시 시작", onReset }: ResetSessionButtonProps) {
 	const handleClick = () => {
 		try {
 			if (typeof window !== "undefined") {

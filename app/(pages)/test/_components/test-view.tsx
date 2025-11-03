@@ -30,18 +30,31 @@ export function TestView({ questions }: TestViewProps) {
 			window.location.href = "/start";
 			return;
 		}
-
-		// 이미 결과 쿠키가 있으면 처방 페이지로 이동(세션 내 중복 생성 방지)
-		try {
-			if (document.cookie.split(";").some((c) => c.trim().startsWith("pesma_result_id="))) {
-				window.location.href = "/prescription";
-				return;
-			}
-		} catch {}
 		setNickname(savedNickname);
 	}, []);
 
 	const { currentQuestion, currentAnswer, currentIndex, totalQuestions, handleAnswerChange, handlePrev, handleNext, handleComplete, canGoPrev, canGoNext, isLastQuestion, isAnswered, isSubmitting } = useTestLogic(questions, nickname);
+
+	// Enter 키로 다음/완료 진행
+	useEffect(() => {
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.key !== "Enter") return;
+			// 수정키가 눌린 경우 무시
+			if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+			// 응답이 선택된 상태에서만 동작, 제출 중이면 무시
+			if (!isAnswered || isSubmitting) return;
+			// 기본 동작 방지 (의도치 않은 폼 제출 등)
+			e.preventDefault();
+			if (isLastQuestion) {
+				void handleComplete();
+			} else if (canGoNext) {
+				void handleNext();
+			}
+		};
+
+		window.addEventListener("keydown", onKeyDown);
+		return () => window.removeEventListener("keydown", onKeyDown);
+	}, [isAnswered, isSubmitting, isLastQuestion, canGoNext, handleNext, handleComplete]);
 
 	// nickname 로딩 중
 	if (!nickname) {
