@@ -50,16 +50,21 @@ export function PrescriptionView({ initialResult }: { initialResult?: SessionRes
 		// 초기 진입: 서버가 넘겨준 결과가 없으면 세션스토리지에서 폴백 시도
 		if (initialResult) {
 			setResultInfo(initialResult);
-			fetchPrescription(initialResult.code);
-			setLoading(false);
+			// 처방전을 불러올 때까지 로딩 유지 (플래시 방지)
+			setLoading(true);
+			void fetchPrescription(initialResult.code);
 			return;
 		}
+		let startedFetch = false;
 		try {
 			const raw = sessionStorage.getItem("pesma_test_result");
 			if (raw) {
 				const parsed = JSON.parse(raw) as SessionResult;
 				if (parsed && parsed.code && parsed.nickname) {
 					setResultInfo(parsed);
+					// 처방전을 불러올 때까지 로딩 유지 (플래시 방지)
+					setLoading(true);
+					startedFetch = true;
 					void fetchPrescription(parsed.code);
 					return;
 				}
@@ -68,7 +73,9 @@ export function PrescriptionView({ initialResult }: { initialResult?: SessionRes
 		} catch {
 			setError("테스트 결과를 찾을 수 없습니다. 홈에서 테스트를 다시 시작해주세요.");
 		} finally {
-			setLoading(false);
+			if (!startedFetch) {
+				setLoading(false);
+			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
